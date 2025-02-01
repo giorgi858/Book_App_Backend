@@ -4,7 +4,7 @@ from .serializers import Books_noteSerializer
 
 
 def home_page_render_get(request):
-    books = Books_Note.objects.all()
+    books = Books_Note.objects.all().order_by('-updated')
     serializer = Books_noteSerializer(books, many=True)
     # print('serializer.data', serializer.data)
     return Response(serializer.data)
@@ -12,12 +12,10 @@ def home_page_render_get(request):
 def create_book(request):
     data = request.data
     book = Books_Note.objects.create(
-        title = data['title'],
-        content = data['content'],
+        content=data['content']
     )
     serializer = Books_noteSerializer(book, many=False)
-    print(serializer.data)
-    return Response(serializer.data)  
+    return Response(serializer.data)
 
 def get_single_book(request, pk):
     books = Books_Note.objects.get(id=pk)
@@ -27,12 +25,13 @@ def get_single_book(request, pk):
 
 def get_single_book_updatad(request, pk):
     data = request.data
-    books = Books_Note.objects.get(id=pk)
-    serializer = Books_noteSerializer(instance=books, data=data)
-    
+    book = Books_Note.objects.get(id=pk)
+    serializer = Books_noteSerializer(instance=book, data=data)
+
     if serializer.is_valid():
         serializer.save()
-    return serializer.data
+
+    return Response(serializer.data)
 
 def get_single_book_delete(request, pk):
     books = Books_Note.objects.get(id=pk)
