@@ -1,20 +1,44 @@
-from .utiles import home_page_render_get, create_book, get_single_book, get_single_book_delete, get_single_book_updatad
-from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import generics
+from .serializers import  Books_noteSerializer
+from .models import Books_Note
+from django.contrib.auth.models import User
+from .serializers import UserSerializer
 
+# class BookListAPIView(generics.ListAPIView):
+#     queryset = Books_Note.objects.all()
+#     serializer_class = Books_noteSerializer
+#     parser_classes = [IsAuthenticated]
 
-@api_view(['GET', 'POST'])
-def home_page(request):
-    if request.method == 'GET':
-        return  home_page_render_get(request)
-    if request.method == 'POST':
-        return create_book(request)
+class BookDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Books_Note.objects.all().order_by('-updated')
+    serializer_class = Books_noteSerializer
+
+class BookListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Books_Note.objects.all()
+    serializer_class = Books_noteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Books_Note.objects.filter(author=user)
     
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            serializer.save(author=self.request.user)
+        else:
+            print(serializer.errors)
     
-@api_view(['GET', 'PUT', 'DELETE'])
-def getBookNote(request, pk):
-    if request.method == 'GET':
-        return  get_single_book(request, pk)
-    if request.method == 'PUT':
-        return  get_single_book_updatad(request, pk)
-    if request.method == 'DELETE':
-        return  get_single_book_delete(request, pk)
+
+# class BookDelete(generics.DestroyAPIView):
+#     serializer_class = Books_noteSerializer
+#     permission_classes = [IsAuthenticated]  
+    
+#     def get_queryset(self):
+#         user = self.request.user
+#         return Books_Note.objects.filter(author=user)
+
+class CreateUserView(generics.CreateAPIView):
+    queryset= User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]  
