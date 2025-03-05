@@ -1,0 +1,29 @@
+services:
+  web:
+    build: .
+    command: gunicorn book_note.wsgi -b 0.0.0.0:8000 
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - "DJANGO_SECRET_KEY=sdfsjalk1212_3zdgmldSDJGO12_32MVLKdsksdgjk1231_8dFaq"
+      - "DJANGO_DEBUG=True"
+      - "DJANGO_SECURE_SSL_REDIRECT=False"  # new
+      - "DJANGO_SECURE_HSTS_SECONDS=0"  # new
+      - "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False"  # new
+      - "DJANGO_SECURE_HSTS_PRELOAD=False"  # new
+      - "DJANGO_SESSION_COOKIE_SECURE=False"  # new
+      - "DJANGO_CSRF_COOKIE_SECURE=False"  # new
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+
+volumes:
+  postgres_data:
+   

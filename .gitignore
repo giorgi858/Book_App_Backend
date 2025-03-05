@@ -2,3 +2,7 @@ env
 .env
 .DS_Store
 __pycache__/
+backend/docker-compose-prod.yml
+
+
+
