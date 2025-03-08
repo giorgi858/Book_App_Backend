@@ -2,9 +2,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import  timedelta
-from environs import Env  # new
-env = Env()  # new
-env.read_env()  # new
+# from environs import Env  # new
 
 load_dotenv()
 
@@ -16,10 +14,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG", default=False)  # new
+DEBUG = os.getenv("DJANGO_DEBUG", default=False)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -44,17 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # "whitenoise.runserver_nostatic",  # new
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
     'corsheaders',
 ]
- 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # "whitenoise.middleware.WhiteNoiseMiddleware",  # new
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -62,8 +58,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 
 ROOT_URLCONF = 'book_note.urls'
 
@@ -86,17 +80,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'book_note.wsgi.application'
 
 
-# Database
+# Database  
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        "NAME": 'postgres',
-        "USER": 'postgres',
-        "PASSWORD": 'postgres',
-        "HOST": 'db',
-        "PORT": 5432,
+    "default":{
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PWD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -105,6 +100,15 @@ DATABASES = {
 # DB_PWD=""
 # DB_HOST=""
 # DB_PORT=""
+
+
+        # "ENGINE": "django.db.backends.postgresql",
+        # "NAME": os.getenv("DB_NAME"),
+        # "USER": os.getenv("DB_USER"),
+        # "PASSWORD": os.getenv("DB_PWD"),
+        # "HOST": os.getenv("DB_HOST"),
+        # "PORT": os.getenv("DB_PORT"),
+     
 
 
 # Password validation
@@ -154,11 +158,16 @@ CORS_ALLOWS_CREDENTIALS = True
 
 # CSRF_COOKIE_NAME = 'csrftoken'
 # CSRF_HEADER_NAME = 'X-CSRFToken'
-SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)
-SECURE_HSTS_SECONDS = env.int("DJANGO_SECURE_HSTS_SECONDS", default=2592000)  # 30 days
-SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
-    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True
-)
-SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
-SESSION_COOKIE_SECURE = env.bool("DJANGO_SESSION_COOKIE_SECURE", default=True)
-CSRF_COOKIE_SECURE = env.bool("DJANGO_CSRF_COOKIE_SECURE", default=True)
+
+
+# SECURE_SSL_REDIRECT = os.getenv("DJANGO_SECURE_SSL_REDIRECT", default=True)
+SECURE_SSL_REDIRECT = True
+
+SECURE_HSTS_SECONDS = os.getenv("DJANGO_SECURE_HSTS_SECONDS", default=2592000)  # 30 days
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SESSION_COOKIE_SECURE =  True
+CSRF_COOKIE_SECURE = True
+# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")  # new
+
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"  # new
